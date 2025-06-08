@@ -227,21 +227,6 @@ wheels = [
 ]
 
 [[package]]
-name = "check-orientation"
-version = "0.0.5"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "albumentations" },
-    { name = "iglovikov-helper-functions" },
-    { name = "timm" },
-    { name = "torch" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/a6/ab/989de3d15bdf3c1e33fce5295103a8e8b3bd6cd1bfcaaeb5a66c07411cb1/check_orientation-0.0.5.tar.gz", hash = "sha256:519467483866585fdd4c9ef9b5c1fc28d9d137a1dd4858f49db8a2f0e0ad1c02", size = 6646 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/50/37/3dd46cffdd44eb747623d43959e1a1717751a6df4f01a0d6e091e44f2151/check_orientation-0.0.5-py2.py3-none-any.whl", hash = "sha256:3398497866432b7239e4e679c47133cf7df4d150845f277e518ba08112bdffe7", size = 11386 },
-]
-
-[[package]]
 name = "click"
 version = "8.1.8"
 source = { registry = "https://pypi.org/simple" }
@@ -1482,7 +1467,6 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "albumentations" },
-    { name = "check-orientation" },
     { name = "click", version = "8.1.8", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "click", version = "8.2.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "iglovikov-helper-functions" },
@@ -1490,6 +1474,7 @@ dependencies = [
     { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.10.*'" },
     { name = "numpy", version = "2.3.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "pillow" },
+    { name = "timm" },
     { name = "torch" },
     { name = "torchvision" },
     { name = "tqdm" },
@@ -1505,7 +1490,6 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "albumentations", specifier = ">=1.0.0" },
-    { name = "check-orientation", specifier = ">=0.0.3" },
     { name = "click", specifier = ">=8.0.0" },
     { name = "iglovikov-helper-functions", specifier = ">=0.0.53" },
     { name = "numpy", specifier = ">=1.20.0" },
@@ -1513,6 +1497,7 @@ requires-dist = [
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0.0" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.0.0" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.1.0" },
+    { name = "timm", specifier = ">=0.9.0" },
     { name = "torch", specifier = ">=1.9.0" },
     { name = "torchvision", specifier = ">=0.10.0" },
     { name = "tqdm", specifier = ">=4.62.0" },

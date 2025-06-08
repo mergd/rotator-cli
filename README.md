@@ -68,9 +68,6 @@ rotator --verbose /path/to/images
 ### Advanced options
 
 ```bash
-# Use a different ML model
-rotator --model swsl_resnext50_32x4d /path/to/images
-
 # Combine options
 rotator --dry-run --verbose --no-backup /path/to/images
 ```
@@ -78,7 +75,7 @@ rotator --dry-run --verbose --no-backup /path/to/images
 ## How it works
 
 1. **Scans** the specified directory for supported image files
-2. **Detects** rotation using the `check_orientation` ML model
+2. **Detects** rotation using an inlined ResNeXt50 ML model
 3. **Rotates** images that need correction (0�, 90�, 180�, 270�)
 4. **Creates backups** (unless disabled) before modifying originals
 5. **Reports** processing results and statistics

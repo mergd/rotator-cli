@@ -20,12 +20,13 @@ try:
     import albumentations as albu
     import numpy as np
     import torch
-    from check_orientation.pre_trained_models import create_model
     from iglovikov_helper_functions.dl.pytorch.utils import tensor_from_rgb_image
     from iglovikov_helper_functions.utils.image_utils import load_rgb
+
+    from rotator_cli.orientation_model import create_orientation_model
 except ImportError as e:
     print(
-        f"Error: Required libraries not installed. Run: uv add check-orientation torch torchvision albumentations iglovikov-helper-functions\nError: {e}"
+        f"Error: Required libraries not installed. Run: uv add torch torchvision albumentations iglovikov-helper-functions timm\nError: {e}"
     )  # noqa: T201
     sys.exit(1)
 
@@ -35,9 +36,8 @@ class ImageRotator:
 
     SUPPORTED_FORMATS = {".jpg", ".jpeg", ".png", ".bmp", ".tiff", ".tif"}
 
-    def __init__(self, model_name: str = "swsl_resnext50_32x4d") -> None:
-        """Initialize the rotator with a specific model."""
-        self.model_name = model_name
+    def __init__(self) -> None:
+        """Initialize the rotator with the orientation detection model."""
         self.model = None
         self.transform = None
         self._setup_model()
@@ -46,7 +46,7 @@ class ImageRotator:
         """Setup the orientation detection model."""
         try:
             # Create the model
-            self.model = create_model(self.model_name)
+            self.model = create_orientation_model()
             self.model.eval()
 
             # Setup transforms
@@ -179,18 +179,12 @@ class ImageRotator:
     help="Show what would be done without making changes",
 )
 @click.option("--verbose", "-v", is_flag=True, help="Show detailed output")
-@click.option(
-    "--model",
-    default="swsl_resnext50_32x4d",
-    help="Model to use for orientation detection",
-)
 def main(
     directory: Path,
     recursive: bool,
     no_backup: bool,
     dry_run: bool,
     verbose: bool,
-    model: str,
 ) -> None:
     """Automatically detect and fix image orientation in a directory.
 
@@ -199,7 +193,7 @@ def main(
 
     click.echo(f"🔍 Scanning for images in: {directory}")
 
-    rotator = ImageRotator(model)
+    rotator = ImageRotator()
     images = rotator.find_images(directory, recursive)
 
     if not images:
