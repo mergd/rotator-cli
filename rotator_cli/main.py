@@ -17,10 +17,15 @@ if TYPE_CHECKING:
     pass
 
 try:
-    from check_orientation import check_orientation
-except ImportError:
+    import albumentations as albu
+    import numpy as np
+    import torch
+    from check_orientation.pre_trained_models import create_model
+    from iglovikov_helper_functions.dl.pytorch.utils import tensor_from_rgb_image
+    from iglovikov_helper_functions.utils.image_utils import load_rgb
+except ImportError as e:
     print(
-        "Error: check_orientation library not installed. Run: uv add check_orientation"
+        f"Error: Required libraries not installed. Run: uv add check-orientation torch torchvision albumentations iglovikov-helper-functions\nError: {e}"
     )  # noqa: T201
     sys.exit(1)
 
@@ -33,6 +38,30 @@ class ImageRotator:
     def __init__(self, model_name: str = "swsl_resnext50_32x4d") -> None:
         """Initialize the rotator with a specific model."""
         self.model_name = model_name
+        self.model = None
+        self.transform = None
+        self._setup_model()
+
+    def _setup_model(self) -> None:
+        """Setup the orientation detection model."""
+        try:
+            # Create the model
+            self.model = create_model(self.model_name)
+            self.model.eval()
+
+            # Setup transforms
+            self.transform = albu.Compose(
+                [
+                    albu.Resize(224, 224),
+                    albu.Normalize(
+                        mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)
+                    ),
+                ]
+            )
+
+        except Exception as e:
+            click.echo(f"Error setting up model: {e}", err=True)
+            sys.exit(1)
 
     def is_image_file(self, file_path: Path) -> bool:
         """Check if file is a supported image format."""
@@ -56,8 +85,26 @@ class ImageRotator:
     def detect_rotation(self, image_path: Path) -> int:
         """Detect the rotation angle of an image."""
         try:
-            # Use check_orientation to predict rotation
-            return check_orientation(str(image_path))
+            # Load image
+            image = load_rgb(str(image_path))
+
+            # Apply transforms
+            transformed = self.transform(image=image)
+            tensor_image = tensor_from_rgb_image(transformed["image"])
+
+            # Add batch dimension
+            tensor_image = tensor_image.unsqueeze(0)
+
+            # Predict
+            with torch.no_grad():
+                prediction = self.model(tensor_image)
+                predicted_class = torch.argmax(prediction, dim=1).item()
+
+            # Convert class to rotation angle
+            # Assuming classes are: 0=0°, 1=90°, 2=180°, 3=270°
+            rotation_map = {0: 0, 1: 90, 2: 180, 3: 270}
+            return rotation_map.get(predicted_class, 0)
+
         except Exception as e:  # noqa: BLE001
             click.echo(f"Error detecting rotation for {image_path}: {e}", err=True)
             return 0

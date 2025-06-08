@@ -27,12 +27,15 @@ classifiers = [
 ]
 requires-python = ">=3.9"
 dependencies = [
-    "check_orientation>=0.0.3",
+    "check-orientation>=0.0.3",
     "Pillow>=10.0.0",
     "click>=8.0.0",
     "tqdm>=4.62.0",
     "torch>=1.9.0",
     "torchvision>=0.10.0",
+    "albumentations>=1.0.0",
+    "iglovikov-helper-functions>=0.0.53",
+    "numpy>=1.20.0",
 ]
 
 [project.scripts]
